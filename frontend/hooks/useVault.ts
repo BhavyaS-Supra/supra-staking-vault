@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useAccount, useReadContract, useReadContracts, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useReadContract, useReadContracts, useWaitForTransactionReceipt } from 'wagmi';
 import { STAKING_VAULT_ADDRESS, STAKE_TOKEN_ADDRESS, CONTRACTS_CONFIGURED } from '@/lib/contracts';
 import stakingVaultAbi from '@/lib/abi/StakingVault.json';
 import erc20Abi from '@/lib/abi/StakeToken.json';
+import { useWriteContractWithGas } from './useWriteContractWithGas';
 
 const REFRESH_INTERVAL_MS = 10_000;
 
@@ -73,7 +74,7 @@ export function useVaultReads() {
 /// Wraps a single write + its receipt wait, refetching vault reads on confirmation so the UI
 /// reflects the new state without a manual refresh.
 function useVaultWrite(onSuccessRefetch: () => void) {
-  const write = useWriteContract();
+  const write = useWriteContractWithGas();
   const receipt = useWaitForTransactionReceipt({ hash: write.data });
 
   useEffect(() => {
